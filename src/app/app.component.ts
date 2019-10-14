@@ -1,20 +1,62 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Component} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+
+interface RowData {
+  videoId: string;
+  title: string;
+  thumbnails: string;
+  publishedAt: string;
+  description: string;
+}
+
+interface Components {
+  titleLinksRenderer: any;
+  thumbnailsImageRender: any;
+}
+
+interface ICellRendererParams {
+  value: any;
+  valueFormatted: any;
+  getValue: () => any;
+  setValue: (value: any) => void;
+  formatValue: (value: any) => any;
+  data: any;
+  node: any;
+  colDef: any;
+  column: any;
+  rowIndex: number;
+  api: any;
+  eGridCell: HTMLElement;
+  eParentOfValue: HTMLElement;
+  columnApi: any;
+  context: any;
+  refreshCell: () => void;
+}
+
+interface Res {
+  etag: string;
+  items: any;
+  kind: string;
+  nextPageToken: string;
+  pageInfo: {totalResults: number, resultsPerPage: number};
+  regionCode: string;
+}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent {
   private gridApi;
   private gridColumnApi;
 
-  rowData: any;
-  components: any;
-  isCheckShow: any = false;
-  totalItems: any = 0;
-  selectedItems: any = 0;
+  rowData: RowData[];
+  components: Components;
+  isCheckShow = false;
+  totalItems = 0;
+  selectedItems = 0;
 
   columnDefs = [
     {
@@ -64,7 +106,7 @@ export class AppComponent {
     };
   }
 
-  titleLinksRenderer(params: any) {
+  titleLinksRenderer = (params: ICellRendererParams) => {
     if (params.value === undefined || params.value === null) {
       return '';
     } else {
@@ -73,7 +115,7 @@ export class AppComponent {
     }
   }
 
-  thumbnailsImageRender(params: any) {
+  thumbnailsImageRender = (params: ICellRendererParams) => {
     if (params.value === undefined || params.value === null) {
       return '';
     } else {
@@ -82,21 +124,21 @@ export class AppComponent {
     }
   }
 
-  formatDate(data) {
+  formatDate = (data: string) => {
     const date = new Date(data);
     const day = date.getDate().toString().length === 1 ? `0${date.getDate()}` : date.getDate();
     const month = (date.getMonth() + 1).toString().length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     return `${day}/${month}/${date.getFullYear()}`;
   }
 
-  onGridReady = (params: any) => {
+  onGridReady = (params: ICellRendererParams) => {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
     const data = this.http.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyDOfT_BO81aEZScosfTYMruJobmpjqNeEk&maxResults=' +
       '50&type=video&part=snippet&q=john');
 
-    data.subscribe((res: any) => {
+    data.subscribe((res: Res) => {
       this.totalItems = res.items.length;
       this.rowData = res.items.map(item => {
         const {title, publishedAt, description, thumbnails} = item.snippet;
@@ -111,11 +153,11 @@ export class AppComponent {
     });
   }
 
-  onSelectionChanged = (params: any) => {
+  onSelectionChanged = (params: ICellRendererParams) => {
     this.selectedItems = params.api.getSelectedRows().length;
   }
 
-  getContextMenuItems(params: any) {
+  getContextMenuItems = (params: ICellRendererParams) => {
     if (params.column.colId === 'title') {
       return [
         {
@@ -132,7 +174,7 @@ export class AppComponent {
     return [];
   }
 
-  getMainMenuItems = () => {
+  getMainMenuItems = (params: ICellRendererParams) => {
     return [
       {
         name: this.isCheckShow ? 'Hide' : 'Show',
@@ -141,6 +183,10 @@ export class AppComponent {
           this.columnDefs[0].checkboxSelection = this.isCheckShow;
           this.columnDefs[0].headerCheckboxSelection = this.isCheckShow;
           this.gridApi.setColumnDefs(this.columnDefs);
+          if (!this.isCheckShow) {
+            this.selectedItems = 0;
+            params.api.deselectAll();
+          }
         }
       }
     ];

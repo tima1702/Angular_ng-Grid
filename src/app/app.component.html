@@ -16,9 +16,9 @@
     [allowContextMenuWithControlKey]="true"
   >
   </ag-grid-angular>
-  <div class="footer-grid" [ngClass]="{'visible': isCheckShow}">
+  <div class="footer-grid">
+    <div class="footer-grid__selected" [ngClass]="{'visible': isCheckShow}">Selected records count: {{selectedItems}}</div>
     <div>Total count of records: {{totalItems}}</div>
-    <div>Selected records count: {{selectedItems}}</div>
   </div>
 </div>
 

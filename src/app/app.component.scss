@@ -10,10 +10,16 @@
   height: 50px;
   border: 1px solid #BDC3C7;
   border-top: none;
-  padding: 10px 0 0 10px;
-  display: none;
+  align-items: center;
+  padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
 
-  &.visible {
-    display: block!important;
+  &__selected {
+    visibility: hidden;
+
+    &.visible {
+      visibility: visible;
+    }
   }
 }
