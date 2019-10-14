@@ -1,0 +1,19 @@
+.ag-grid-container {
+  width: 100%;
+
+  .ag-theme-balham {
+    height: 600px;
+  }
+}
+
+.footer-grid {
+  height: 50px;
+  border: 1px solid #BDC3C7;
+  border-top: none;
+  padding: 10px 0 0 10px;
+  display: none;
+
+  &.visible {
+    display: block!important;
+  }
+}

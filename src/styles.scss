@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ag-grid-community/dist/styles/ag-grid.css";
+@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+
+
+.ag-theme-balham .ag-ltr .ag-cell {
+  border: none!important;
+}
+
+.publishedAt-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-col, .description-col {
+  display: flex;
+  align-items: center;
+  white-space: normal;
+}

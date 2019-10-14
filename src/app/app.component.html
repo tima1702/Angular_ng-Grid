@@ -1,0 +1,26 @@
+<div class="ag-grid-container">
+  <ag-grid-angular
+    class="ag-theme-balham"
+    rowHeight = '90'
+    rowSelection="multiple"
+    suppressRowClickSelection="true"
+    angularCompileHeaders="true"
+    [rowData]="rowData"
+    (gridReady)="onGridReady($event)"
+    [columnDefs]="columnDefs"
+    [components]="components"
+    [suppressMenuHide]="true"
+    [getMainMenuItems]="getMainMenuItems"
+    (selectionChanged)="onSelectionChanged($event)"
+    [getContextMenuItems]="getContextMenuItems"
+    [allowContextMenuWithControlKey]="true"
+  >
+  </ag-grid-angular>
+  <div class="footer-grid" [ngClass]="{'visible': isCheckShow}">
+    <div>Total count of records: {{totalItems}}</div>
+    <div>Selected records count: {{selectedItems}}</div>
+  </div>
+</div>
+
+
+<router-outlet></router-outlet>
