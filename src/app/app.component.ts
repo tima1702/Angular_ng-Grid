@@ -49,9 +49,8 @@ interface Res {
 })
 
 export class AppComponent {
-  private gridApi;
-  private gridColumnApi;
-
+  gridApi;
+  gridColumnApi;
   rowData: RowData[];
   components: Components;
   isCheckShow = false;
@@ -100,6 +99,31 @@ export class AppComponent {
   ];
 
   constructor(private http: HttpClient) {
+    // tslint:disable-next-line:no-shadowed-variable
+    const formatDate = (data: string) => {
+      const date = new Date(data);
+      const day = date.getDate().toString().length === 1 ? `0${date.getDate()}` : date.getDate();
+      const month = (date.getMonth() + 1).toString().length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+      return `${day}/${month}/${date.getFullYear()}`;
+    }
+
+    const data = this.http.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyDOfT_BO81aEZScosfTYMruJobmpjqNeEk&maxResults=' +
+      '50&type=video&part=snippet&q=john');
+
+    data.subscribe((res: Res) => {
+      this.totalItems = res.items.length;
+      this.rowData = res.items.map(item => {
+        const {title, publishedAt, description, thumbnails} = item.snippet;
+        return {
+          videoId: item.id.videoId,
+          title,
+          thumbnails: thumbnails.default.url,
+          publishedAt: formatDate(publishedAt),
+          description,
+        };
+      });
+    });
+
     this.components = {
       titleLinksRenderer: this.titleLinksRenderer,
       thumbnailsImageRender: this.thumbnailsImageRender,
@@ -124,36 +148,12 @@ export class AppComponent {
     }
   }
 
-  formatDate = (data: string) => {
-    const date = new Date(data);
-    const day = date.getDate().toString().length === 1 ? `0${date.getDate()}` : date.getDate();
-    const month = (date.getMonth() + 1).toString().length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-    return `${day}/${month}/${date.getFullYear()}`;
-  }
-
   onGridReady = (params: ICellRendererParams) => {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-
-    const data = this.http.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyDOfT_BO81aEZScosfTYMruJobmpjqNeEk&maxResults=' +
-      '50&type=video&part=snippet&q=john');
-
-    data.subscribe((res: Res) => {
-      this.totalItems = res.items.length;
-      this.rowData = res.items.map(item => {
-        const {title, publishedAt, description, thumbnails} = item.snippet;
-        return {
-          videoId: item.id.videoId,
-          title,
-          thumbnails: thumbnails.default.url,
-          publishedAt: this.formatDate(publishedAt),
-          description,
-        };
-      });
-    });
   }
 
-  onSelectionChanged = (params: ICellRendererParams) => {
+  onSelectionChanged = (params: any) => {
     this.selectedItems = params.api.getSelectedRows().length;
   }
 
